@@ -1,4 +1,3 @@
-import java.util.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,8 +8,8 @@ public class MonteCarlo {
 	public static void main(String[] args) throws IOException {
 		Simulation ourGenerator = new Simulation(100000, 11);  //init Simulation with 100000 random numbers and 11 bins
 		
-		// NOTE:	Number of bins can be changed by using, ourGenerator.changeNumberOfBins(new size)
-		//			New set of random numbers can be created by calling ourGenerator.generateNormalRandomNumber(new size)
+		// NOTE:	Number of bins can be changed by calling: ourGenerator.changeNumberOfBins(new size)
+		//			New set of random numbers can be created by calling: ourGenerator.generateNormalRandomNumber(new size)
 		
 		MonteCarlo mc = new MonteCarlo();   		// init. MonteCarlo
 		
@@ -36,7 +35,7 @@ public class MonteCarlo {
 	
 	//takes an array as input and writes the array to a file
 	public void writeArrayToFile(final int[] array, final String fileName){
-		try {
+
 			FileWriter fw = new FileWriter(fileName);	//opens file for writing 
 			BufferedWriter bw = new BufferedWriter(fw);
 			
@@ -46,10 +45,6 @@ public class MonteCarlo {
 			}
 			bw.close(); //close file
 		}
-		catch(IOException e){
-			System.out.println(e.toString());  //prints error message if fails  
-		}
-	}
 	
 	
 	//prints verifyDistribution nicely 

@@ -6,8 +6,6 @@ import java.text.DecimalFormat;
 
 
 //Draws histogram of Simulation object. 
-// NOTE: 	If changes are made to instance of Simulation, new Histogram object needs 
-//			to be created.
 
 // NOTE: 	Position (0,0) is at the top left corner of the screen.	
 public class Histogram extends JPanel{
@@ -27,17 +25,17 @@ public class Histogram extends JPanel{
 	public Histogram(Simulation s) {
 		setBackground(Color.WHITE);
 		// Set values of instance variables ...
-		this.numberOfBins = s.getNumberOfBins();
+		this.numberOfBins = s.getNumberOfBins();  
 		this.binSize = s.getBinSize();
 		this.binsArray = s.makeBins();
 		this.min = s.getArrayLowerBound();
-		this.maxYValue = this.getMaxFrequency();
+		this.maxYValue = getMaxFrequency(this.binsArray);
 	}
 	
 	//returns largest frequency in binsArray
-	private int getMaxFrequency() {
+	private static int getMaxFrequency(int [] bin) {
 		int max = 0;	
-		for (int value : this.binsArray) 
+		for (int value : bin) 
 			if (value > max)
 				max = value;
 		return max;   //NOTE: returns 0 if binsArray is empty
@@ -118,14 +116,13 @@ public class Histogram extends JPanel{
 		for (int value : this.binsArray){
 			label = formatter.format(value);
 			yPosition = this.getBarYPosition(this.getBarHeight(value)) - 5;
-			g.drawString(label, xPosition + 25, yPosition);
+			g.drawString(label, xPosition + 10, yPosition);
 			xPosition += barWidth;
 		}
 	}
 	
 	// takes y-value and returns the height of it's bar 
 	// Objects are drawn in terms of pixels. We have to scale values to draw them correctly.
-	// 
 	private int getBarHeight(int yValue){
 		int lengthOfYAxis = this.getHeight() - this.TOP_MARGIN - this.BOTTOM_MARGIN;
 		return (int)(((double)yValue / this.maxYValue) * lengthOfYAxis);  
