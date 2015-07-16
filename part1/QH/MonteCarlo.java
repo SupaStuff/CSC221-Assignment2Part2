@@ -2,24 +2,34 @@ import java.util.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.JFrame;
 
 public class MonteCarlo {
 
-	public static void main(String[] args) throws IOException {
-		Simulation ourGenerator = new Simulation();  //init Simulation 
-		MonteCarlo mc = new MonteCarlo();   		// init MonteCarlo
-		ArrayList<Double> randomNumberArray = new ArrayList<Double>(); //init ArrayList for random numbers
+	public static void main(String[] args){
+		Simulation ourGenerator = new Simulation(100000, 11);  //init Simulation with 100000 random numbers and 11 bins
 		
+		// NOTE:	Number of bins can be changed by using, ourGenerator.changeNumberOfBins(new size)
+		//			New set of random numbers can be created by calling ourGenerator.generateNormalRandomNumber(new size)
 		
-		ourGenerator.generateNormalRandomNumber(randomNumberArray, 100000); //generate array of 100,000 random numbers
-		int [] binsArray = ourGenerator.makeBins(randomNumberArray, 11);    //create array of 11 bins and puts random numbers from randomNumberArray into corresponding bins 
+		MonteCarlo mc = new MonteCarlo();   		// init. MonteCarlo
+		
+		int [] binsArray = ourGenerator.makeBins();    //create array of 11 bins and puts random numbers from randomNumberArray into corresponding bins 
 		
 		mc.writeArrayToFile(binsArray, "Gauss.txt");  //write binsArray to file "Gauss.txt"
 		
-		mc.printVerifyDistribution(randomNumberArray, 0, 1.0, 1.0); //print verify distribution with values 0,1,1
-		mc.printVerifyDistribution(randomNumberArray, 0, 1.0, 2.0); //print verify distribution with values 0,1,2
-		mc.printVerifyDistribution(randomNumberArray, 0, 1.0, 3.0); //print verify distribution with values 0,1,3
-	
+		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 1.0); //print verify distribution with values 0,1,1
+		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 2.0); //print verify distribution with values 0,1,2
+		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 3.0); //print verify distribution with values 0,1,3
+		
+		Histogram h = new Histogram(ourGenerator);
+		JFrame visuals = new JFrame();
+		visuals.setTitle("CSc 221 Histogram");
+		visuals.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		visuals.add(h);
+		visuals.setSize(1200, 800);
+		visuals.setVisible(true);
+		
 	}
 	
 	

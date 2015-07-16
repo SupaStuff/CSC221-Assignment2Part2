@@ -3,25 +3,71 @@ import java.util.*;
 
 public class Simulation {
 	
-	public void generateNormalRandomNumber(final ArrayList<Double> array,final int size){
-		array.clear(); 								//clear the arrayList 
-		Random generator = new Random();  			//init Random 
-		for(int i = 0; i < size; i++)				//generate random number and add to array list
-			array.add(generator.nextGaussian());
+	//reference of ArrayList can't be changed but elements are mutable
+	private final ArrayList<Double> randomNumberArray; 
+	private int numberOfBins;	
+	
+	public Simulation(final int numberOfRandomNumbers, final int numberOfBins){
+		this.randomNumberArray = new ArrayList<Double> ();
+		Random generator = new Random();  							//init Random 
+		for(int i = 0; i < numberOfRandomNumbers; i++)				//generate random number and add to array list
+			this.randomNumberArray.add(generator.nextGaussian());
 		
+		this.numberOfBins = numberOfBins; //sets numberOfBins
 	}
 	
-	public final double getMin(final ArrayList<Double> array){
-		return Collections.min(array);  			//return minimum value in an ArrayList
+	//can change the elements of randomNumberArray but calling this 
+	public void generateNormalRandomNumber(final int numberOfRandomNumbers){
+		this.randomNumberArray.clear();								//clear the arrayList 
+		Random generator = new Random();  							//init Random 
+		for(int i = 0; i < numberOfRandomNumbers; i++)				//generate random number and add to array list
+			this.randomNumberArray.add(generator.nextGaussian());
 	}
 	
-	public final double getMax(final ArrayList<Double> array){
-		return Collections.max(array); 				//return max value in ArrayList
+	//numberOfBins is private so we need getter and setter functions
+	public int getNumberOfBins() {
+		return numberOfBins;
+	}
+	
+	//can change the number of bins 
+	public void changeNumberOfBins(int numberOfBins) {
+		this.numberOfBins = numberOfBins;  
+	}
+	
+	//gives access to our private array 
+	public ArrayList<Double> getRandomNumberArray(){
+		return this.randomNumberArray;
+	}
+	
+	public final double getMin(){
+		return Collections.min(this.randomNumberArray);  			//return minimum value in ArrayList
+	}
+	
+	public final double getMax(){
+		return Collections.max(this.randomNumberArray); 				//return max value in ArrayList
 	}	
 	
-	public final double getRange(final ArrayList<Double> array){
-		return Collections.max(array) - Collections.min(array);  //subtract min value from max value
+	public final double getRange(){
+		return Collections.max(this.randomNumberArray) - Collections.min(this.randomNumberArray);  //subtract min value from max value
 	}
+	
+	//round min value down to nearest tenth
+	public double getArrayLowerBound(){
+		return Math.floor(this.getMin() * 10) / 10; 
+	}
+		
+	//round max value up to nearest tenth
+	public double getArrayUpperBound(){
+		return Math.ceil(getMax() * 10) / 10;
+	}
+	
+	//returns our bin's size
+	public double getBinSize(){
+		final double arrayLowerBound = this.getArrayLowerBound(); //round min value down to nearest tenth
+		final double arrayUpperBound = this.getArrayUpperBound();  //round max value up to nearest tenth
+		return (arrayUpperBound-arrayLowerBound) / this.numberOfBins;   //subtract arrayLowerBound from arrayUpperbound and divide by size to get each bin's size
+		}
+	
 	
 	public int getBin(final double number, final double binSize, final double min, final double max){
 		int index = -1;
@@ -34,15 +80,13 @@ public class Simulation {
 		return index;	
 	}
 	
-	public int[] makeBins(final ArrayList<Double> array, final int size){
-		final double arrayLowerBound = Math.floor(getMin(array) * 10) / 10; //round min value down to nearest tenth
-		final double arrayUpperBound = Math.ceil(getMax(array) * 10) / 10;  //round max value up to nearest tenth
-		final double binSize = (arrayUpperBound-arrayLowerBound) / size;   //subtract arrayLowerBound from arrayUpperbound and divide by size to get each bin's size
-		final int [] binsArray = new int[size]; //create bins to keep count
-		for (Double value: array)  //get bin number of each value in the ArrayList and increment it in binsArray
-			binsArray[getBin(value, binSize, arrayLowerBound, arrayUpperBound)]++; 
-	
+	public int[] makeBins(){
+		final double arrayLowerBound = this.getArrayLowerBound(); //round min value down to nearest tenth
+		final double arrayUpperBound = this.getArrayUpperBound();  //round max value up to nearest tenth
+		final double binSize = this.getBinSize();
+		final int [] binsArray = new int[this.numberOfBins]; //create bins to keep count
+		for (Double value: this.randomNumberArray)  //get bin number of each value in the ArrayList and increment it in binsArray
+			binsArray[getBin(value, binSize, arrayLowerBound, arrayUpperBound)]++;
 		return binsArray; //return array of counter
 	}
-	
 }
