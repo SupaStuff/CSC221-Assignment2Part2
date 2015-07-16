@@ -69,7 +69,7 @@ public class Histogram extends JPanel{
 		}
 		// drawBins draws the bins
 	private void drawBins(Graphics g) {
-		g.setColor(Color.GRAY);
+		
 		final int barWidth = this.getBarWidth(); 
 		int xPosition = this.LEFT_MARGIN;  //x position of our bars, set initially to origin 
 		for(int value : this.binsArray){
@@ -77,8 +77,11 @@ public class Histogram extends JPanel{
 			int yPosition = this.getBarYPosition(barHeight);
 
 			//draws rectangle
-			g.fill3DRect(xPosition, yPosition, barWidth, barHeight, true);
+			g.setColor(Color.GRAY);
+			g.fillRect(xPosition, yPosition, barWidth, barHeight);
 			//draw a border around the rectangle
+			g.setColor(Color.WHITE);
+			g.drawRect(xPosition, yPosition, barWidth, barHeight);
 			xPosition += barWidth; //move to next bar's x-position
 		}
 	}
