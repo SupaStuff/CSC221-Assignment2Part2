@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 //Draws histogram of Simulation object. 
 
 // NOTE: 	Position (0,0) is at the top left corner of the screen.	
+@SuppressWarnings("serial")
 public class Histogram extends JPanel{
 	final int TOP_MARGIN = 20;
 	final int BOTTOM_MARGIN = 20;
@@ -68,25 +69,26 @@ public class Histogram extends JPanel{
 		}
 		// drawBins draws the bins
 	private void drawBins(Graphics g) {
-		g.setColor(Color.GRAY);
 		
-		//NOTE: barWidth is used a lot but we have to be careful when we initialize it.
-		//		When we initialize a Histogram object, the object has width 0 and height 0.
-		//		The size is set after we call: visuals.setSize(1200, 800) in the MonteCarlo class.
-		//		Maybe one of you can play around with it and find a better place to put it?
-		final int barWidth = ((getWidth() - LEFT_MARGIN - RIGHT_MARGIN) / numberOfBins); 
+		final int barWidth = this.getBarWidth(); 
 		int xPosition = this.LEFT_MARGIN;  //x position of our bars, set initially to origin 
 		for(int value : this.binsArray){
 			int barHeight = this.getBarHeight(value);		//get value's bar height
 			int yPosition = this.getBarYPosition(barHeight);
-			g.fillRect(xPosition, yPosition, barWidth, barHeight);  //draws rectangle
+
+			//draws rectangle
+			g.setColor(Color.GRAY);
+			g.fillRect(xPosition, yPosition, barWidth, barHeight);
+			//draw a border around the rectangle
+			g.setColor(Color.WHITE);
+			g.drawRect(xPosition, yPosition, barWidth, barHeight);
 			xPosition += barWidth; //move to next bar's x-position
 		}
 	}
 		// drawXLabels draws the labels along the x-axis
 	private void drawXLabels(Graphics g) {
 		g.setColor(Color.BLACK);
-		final int barWidth = ((getWidth() - LEFT_MARGIN - RIGHT_MARGIN) / numberOfBins);  //
+		final int barWidth = this.getBarWidth();
 		DecimalFormat formatter = new DecimalFormat();
 		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
@@ -108,15 +110,21 @@ public class Histogram extends JPanel{
 		// i.e., draws the count of the bins on top of the bins
 	private void drawYLabels(Graphics g) {
 		g.setColor(Color.BLUE);
-		final int barWidth = ((getWidth() - LEFT_MARGIN - RIGHT_MARGIN) / numberOfBins);  //
+		final int barWidth = this.getBarWidth();
+		//instantiate a formatter to format our labels
 		DecimalFormat formatter = new DecimalFormat("#,###");
-		int xPosition = this.LEFT_MARGIN;
+		int xPosition = this.LEFT_MARGIN + 10;
 		int yPosition;
 		String label;
+		//iterate through each value in binsArray
 		for (int value : this.binsArray){
+			//create the formatted label
 			label = formatter.format(value);
+			//calculate the y position to place the label
 			yPosition = this.getBarYPosition(this.getBarHeight(value)) - 5;
-			g.drawString(label, xPosition + 10, yPosition);
+			//place the label at the correct position (x, y)
+			g.drawString(label, xPosition, yPosition);
+			//shift over to the next bar's position (if any)
 			xPosition += barWidth;
 		}
 	}
@@ -137,6 +145,15 @@ public class Histogram extends JPanel{
 	// 		This function gets the bar's y-position taking that into account.
 	private int getBarYPosition(int barHeight){
 		return this.getHeight() - this.BOTTOM_MARGIN - barHeight;
+	}
+	
+	//returns every bar's width. Expects the JPanel width to be set
+	//NOTE: barWidth is used a lot but we have to be careful when we initialize it.
+	//		When we initialize a Histogram object, the object has width 0 and height 0.
+	//		The size is set after we call: visuals.setSize(1200, 800) in the MonteCarlo class.
+	private int getBarWidth()
+	{
+		return ((getWidth() - LEFT_MARGIN - RIGHT_MARGIN) / numberOfBins);
 	}
 }
 	

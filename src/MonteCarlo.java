@@ -1,27 +1,59 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+//import java.util.ArrayList;
+
 import javax.swing.JFrame;
 
-public class MonteCarlo {
 
-	public static void main(String[] args) throws IOException {
-		Simulation ourGenerator = new Simulation(100000, 11);  //init Simulation with 100000 random numbers and 11 bins
+public class MonteCarlo {
+	public static void main(String[] args) {
+		//doesn't really make sense to make this a class constant,
+		//but at least to be able to change it in the future, here
+		//are constants for the number of bins and size of list
+		final int SIZE = 100000, NUM_BINS = 11;
 		
-		// NOTE:	Number of bins can be changed by calling: ourGenerator.changeNumberOfBins(new size)
-		//			New set of random numbers can be created by calling: ourGenerator.generateNormalRandomNumber(new size)
+		//instantiates a Simulation.
+		//gen will have Gaussian random numbers in an ArrayList
+		Simulation gen = new Simulation(SIZE, NUM_BINS);
+		//get histogram data
+		int[] bins = gen.makeBins();
+	
+		//initialize a PrintWriter so it doesn't complain about
+		//uninitialized w
+		PrintWriter w = null;
+
+		//because it's possible to not find the file
+		//we are creating
+		try {
+			w = new PrintWriter("Gauss.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
 		
-		MonteCarlo mc = new MonteCarlo();   		// init. MonteCarlo
+		//print the count of each bin to Gauss.txt
+		for(int bin : bins)
+			w.println(bin);
+
+		//close Gauss.txt
+		w.close();
 		
-		int [] binsArray = ourGenerator.makeBins();    //create array of 11 bins and puts random numbers from randomNumberArray into corresponding bins 
+		//verify distribution as the assignment asks.
+		//i = {1.0, 2.0, 3.0}
+		//just a printf() with a function call to
+		//Metrics.verifyDistribution() as a parameter.
+		for(int i=1; i<=3; i++)
+			System.out.printf("For a distribution with\n"
+					+ "\tmean = %.1f\n"
+					+ "\tstandard_deviation = %.1f\n"
+					+ "\t%.1f standard deviations\n"
+					+ "%.2f%% of the the set is in the distribution\n\n",
+							  0.0, 1.0, (double)i,
+							  Metrics.verifyDistribution(gen.getArrayList(), 0.0, 1.0, i));
 		
-		mc.writeArrayToFile(binsArray, "Gauss.txt");  //write binsArray to file "Gauss.txt"
 		
-		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 1.0); //print verify distribution with values 0,1,1
-		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 2.0); //print verify distribution with values 0,1,2
-		mc.printVerifyDistribution(ourGenerator.getRandomNumberArray(), 0, 1.0, 3.0); //print verify distribution with values 0,1,3
 		
-		Histogram h = new Histogram(ourGenerator);
+		Histogram h = new Histogram(gen);
 		JFrame visuals = new JFrame();
 		visuals.setTitle("CSc 221 Histogram");
 		visuals.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,25 +64,5 @@ public class MonteCarlo {
 	}
 	
 	
-	
-	//takes an array as input and writes the array to a file
-	public void writeArrayToFile(final int[] array, final String fileName){
-
-			FileWriter fw = new FileWriter(fileName);	//opens file for writing 
-			BufferedWriter bw = new BufferedWriter(fw);
-			
-			for (int value : array){
-				bw.write(Integer.toString(value)); //for each value in array, write to file
-				bw.newLine();   //write new line
-			}
-			bw.close(); //close file
-		}
-	
-	
-	//prints verifyDistribution nicely 
-	public void printVerifyDistribution(final ArrayList<Double> array, final double mean, final double sdev, final double fromMean){
-		final double percent = Metrics.verifyDistribution(array, mean, sdev, fromMean);  //get percentage 
-		System.out.printf("(%2.2f, %2.2f, %2.2f) = %2.2f%%\n", mean,sdev,fromMean,percent); //prints nicely
-	}
 
 }
